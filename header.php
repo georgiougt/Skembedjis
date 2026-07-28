@@ -14,6 +14,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/">
     <title><?php echo htmlspecialchars($siteName); ?> - Leading Hardware Company in Cyprus</title>
     <link rel="icon" type="image/jpeg" href="assets/favicon.webp">
     <link rel="shortcut icon" href="favicon.ico">
