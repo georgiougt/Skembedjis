@@ -123,7 +123,7 @@ require_once __DIR__ . '/header.php';
             <p class="strong"><?php echo htmlspecialchars($cta_top_1['content']); ?></p>
             <p><?php echo htmlspecialchars($cta_top_2['content']); ?></p>
             <p><?php echo htmlspecialchars($cta_top_3['content']); ?></p>
-            <a href="rentals.php" class="btn btn-blue-outline"><?php echo htmlspecialchars($cta_top_btn['content']); ?></a>
+            <a href="rentals" class="btn btn-blue-outline"><?php echo htmlspecialchars($cta_top_btn['content']); ?></a>
         </div>
     </section>
 
@@ -158,7 +158,7 @@ require_once __DIR__ . '/header.php';
                     <h3><?php echo htmlspecialchars($handling_title['title']); ?></h3>
                     <p class="since"><?php echo htmlspecialchars($handling_sub['title']); ?></p>
                     <p><?php echo htmlspecialchars($handling_desc['content']); ?></p>
-                    <a href="products.php" class="btn btn-white-outline"><?php echo htmlspecialchars($handling_btn['content']); ?></a>
+                    <a href="products" class="btn btn-white-outline"><?php echo htmlspecialchars($handling_btn['content']); ?></a>
                 </div>
             </div>
             
@@ -185,7 +185,7 @@ require_once __DIR__ . '/header.php';
                 <div class="divider-line"></div>
                 <h3><?php echo htmlspecialchars($training_title['title']); ?></h3>
                 <p><?php echo htmlspecialchars($training_desc['content']); ?></p>
-                <a href="training.php" class="btn btn-blue-outline"><?php echo htmlspecialchars($training_btn['content']); ?></a>
+                <a href="operator-training" class="btn btn-blue-outline"><?php echo htmlspecialchars($training_btn['content']); ?></a>
             </div>
         </div>
     </section>
