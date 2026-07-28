@@ -15,3 +15,8 @@ uploads/*
 *.log
 Thumbs.db
 .DS_Store
+
+# Dumps and Sync logs
+wp_posts_dump.txt
+db/last_sync.txt
+

@@ -58,7 +58,7 @@ $store_title = get_section('spare_parts', 'parts_store_title', 'Forklift Spare P
 $store_details = get_section('spare_parts', 'parts_store_details', '', "1 Agoras Street, Ypsonas Industrial Area\n3056 Limassol – Cyprus\n\nPostal Address: P.O.Box 53312,\n3302 Limassol – Cyprus\n\n+357 25 712 265 +357 25 710 413\nforkliftparts@skembedjis.com");
 
 // Fetch image
-$partsCollage = get_image_path('parts_collage', 'Spare Parts Collage');
+$partsCollage = 'assets/spareparts-banner.webp';
 
 require_once __DIR__ . '/header.php';
 ?>

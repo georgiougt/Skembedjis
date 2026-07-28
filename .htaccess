@@ -1,0 +1,58 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# Force HTTPS & WWW if needed (or canonical domain)
+
+# 1. Main Pages
+RewriteRule ^about-us/?$ about.php [L,QSA]
+RewriteRule ^about/?$ about.php [L,QSA]
+RewriteRule ^our-equipment/?$ products.php [L,QSA]
+RewriteRule ^products/?$ products.php [L,QSA]
+RewriteRule ^equipment/?$ products.php [L,QSA]
+RewriteRule ^services/?$ services.php [L,QSA]
+RewriteRule ^spare-parts/?$ spare-parts.php [L,QSA]
+RewriteRule ^blog/?$ blog.php [L,QSA]
+RewriteRule ^news/?$ blog.php [L,QSA]
+RewriteRule ^branches/?$ branches.php [L,QSA]
+RewriteRule ^contact/?$ branches.php [L,QSA]
+RewriteRule ^contact-us/?$ branches.php [L,QSA]
+RewriteRule ^corporate-videos/?$ corporate-videos.php [L,QSA]
+
+# 2. Services Pages
+RewriteRule ^rentals/?$ rentals.php [L,QSA]
+RewriteRule ^sell-your-machine/?$ sell-machine.php [L,QSA]
+RewriteRule ^sell-machine/?$ sell-machine.php [L,QSA]
+RewriteRule ^mobile-service-unit/?$ repairs-services.php [L,QSA]
+RewriteRule ^repairs-services/?$ repairs-services.php [L,QSA]
+RewriteRule ^operator-training/?$ operator-training.php [L,QSA]
+
+# 3. Product Categories (Both with and without /product-category/ prefix)
+RewriteRule ^(?:product-category/)?forklifts/?$ forklifts.php [L,QSA]
+RewriteRule ^(?:product-category/)?reach-trucks/?$ reach-trucks.php [L,QSA]
+RewriteRule ^(?:product-category/)?stackers/?$ stackers.php [L,QSA]
+RewriteRule ^(?:product-category/)?pallet-trucks/?$ pallet-trucks.php [L,QSA]
+RewriteRule ^(?:product-category/)?order-pickers/?$ order-pickers.php [L,QSA]
+RewriteRule ^(?:product-category/)?vna/?$ vna.php [L,QSA]
+RewriteRule ^(?:product-category/)?truck-mounted-forklifts/?$ truck-mounted.php [L,QSA]
+RewriteRule ^(?:product-category/)?truck-mounted/?$ truck-mounted.php [L,QSA]
+RewriteRule ^(?:product-category/)?handling-equipment/?$ handling.php [L,QSA]
+RewriteRule ^(?:product-category/)?handling/?$ handling.php [L,QSA]
+RewriteRule ^(?:product-category/)?attachments/?$ attachments.php [L,QSA]
+RewriteRule ^(?:product-category/)?tyres/?$ tyres.php [L,QSA]
+RewriteRule ^(?:product-category/)?batteries-chargers/?$ batteries-chargers.php [L,QSA]
+RewriteRule ^(?:product-category/)?batteries/?$ batteries-chargers.php [L,QSA]
+RewriteRule ^(?:product-category/)?cleaning-equipment/?$ catalog.php?category=cleaning-equipment [L,QSA]
+RewriteRule ^(?:product-category/)?ramps/?$ ramps.php [L,QSA]
+RewriteRule ^(?:product-category/)?miscellaneous/?$ catalog.php?category=miscellaneous [L,QSA]
+
+# 4. Product Detail pages
+RewriteRule ^product/([^/]+)/?$ product-detail.php?slug=$1 [L,QSA]
+
+# 5. Fallback for existing files & directories
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php [L,QSA]
+
+</IfModule>

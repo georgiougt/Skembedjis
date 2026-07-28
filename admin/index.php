@@ -18,7 +18,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             set_setting($key, $value);
         }
         $success_msg = 'Site settings updated successfully!';
-    } 
+    }
+    
+    elseif ($action === 'sync_catalog') {
+        require_once __DIR__ . '/../sync_products.php';
+        $res = run_products_sync();
+        if ($res['success']) {
+            $success_msg = $res['message'];
+        } else {
+            $error_msg = $res['message'];
+        }
+    }
     
     elseif ($action === 'update_section') {
         $id = (int)($_POST['id'] ?? 0);
@@ -347,6 +357,7 @@ $total_machine_requests = $db->query("SELECT COUNT(*) FROM machine_requests")->f
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Control Panel - Portfolio Dashboard</title>
     <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="admin-style.css">
     <style>
         .sidebar-title {
             font-size: 1.25rem;
@@ -527,7 +538,18 @@ $total_machine_requests = $db->query("SELECT COUNT(*) FROM machine_requests")->f
                 <div class="card" style="margin-top: 2rem;">
                     <h3>Welcome to the Admin Dashboard!</h3>
                     <p style="margin-top: 1rem;">Use the menu navigation on the left to configure page contents, upload replacement images, adjust global settings like social links or contact emails, and secure your credentials.</p>
-                    <p>Once you provide screenshots of the pages you want built, we will implement their visual front-ends here.</p>
+                    
+                    <div style="margin-top: 2rem; border-top: 1px solid var(--border-gray); padding-top: 1.5rem;">
+                        <h4 style="font-weight: 700; font-size: 1.1rem; color: var(--primary-blue); margin-bottom: 0.5rem;">Inventory Synchronization Utility</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Sync your SQLite database directly with <code>items.json</code> (adds new machines, updates changed values, and deletes removed entries). Image WebP compression is handled automatically.</p>
+                        
+                        <form action="?tab=dashboard" method="POST">
+                            <input type="hidden" name="action" value="sync_catalog">
+                            <button type="submit" class="hz-filter-btn" style="padding: 0.65rem 1.5rem; background: var(--primary-blue); color: #ffffff; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; transition: background 0.2s;">
+                                Sync Catalog Now
+                            </button>
+                        </form>
+                    </div>
                 </div>
             <?php endif; ?>
 

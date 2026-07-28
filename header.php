@@ -15,6 +15,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($siteName); ?> - Leading Hardware Company in Cyprus</title>
+    <link rel="icon" type="image/jpeg" href="assets/favicon.webp">
+    <link rel="shortcut icon" href="favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
@@ -33,41 +35,41 @@ $current_page = basename($_SERVER['PHP_SELF']);
             
             <ul class="nav-links" id="navLinks">
                 <li class="nav-item dropdown">
-                    <a href="products.php" class="nav-link <?php 
+                    <a href="products" class="nav-link <?php 
                         $product_pages = ['products.php', 'new-equipment.php', 'forklifts.php', 'vna.php', 'stackers.php', 'pallet-trucks.php', 'order-pickers.php', 'ramps.php', 'batteries-chargers.php', 'truck-mounted.php', 'handling.php', 'attachments.php', 'tyres.php', 'reach-trucks.php'];
                         echo in_array($current_page, $product_pages) ? 'active' : ''; 
                     ?>">Products <span class="dropdown-caret">▼</span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="forklifts.php">Forklifts</a></li>
-                        <li><a href="catalog.php?category=cleaning">Cleaning Equipment</a></li>
-                        <li><a href="catalog.php">Material Handling Equipment</a></li>
-                        <li><a href="batteries-chargers.php">Batteries &amp; Chargers</a></li>
-                        <li><a href="tyres.php">Tyres &amp; Wheels</a></li>
-                        <li><a href="ramps.php">Ramps</a></li>
-                        <li><a href="attachments.php">Attachments</a></li>
-                        <li><a href="catalog.php?category=miscellaneous">Miscellaneous</a></li>
+                        <li><a href="product-category/forklifts">Forklifts</a></li>
+                        <li><a href="product-category/cleaning-equipment">Cleaning Equipment</a></li>
+                        <li><a href="catalog">Material Handling Equipment</a></li>
+                        <li><a href="product-category/batteries-chargers">Batteries &amp; Chargers</a></li>
+                        <li><a href="product-category/tyres">Tyres &amp; Wheels</a></li>
+                        <li><a href="product-category/ramps">Ramps</a></li>
+                        <li><a href="product-category/attachments">Attachments</a></li>
+                        <li><a href="product-category/miscellaneous">Miscellaneous</a></li>
                     </ul>
                 </li>
                 <li class="nav-separator">|</li>
                 <li class="nav-item">
-                    <a href="spare-parts.php" class="nav-link <?php echo $current_page === 'spare-parts.php' ? 'active' : ''; ?>">Spare Parts</a>
+                    <a href="spare-parts" class="nav-link <?php echo $current_page === 'spare-parts.php' ? 'active' : ''; ?>">Spare Parts</a>
                 </li>
                 <li class="nav-separator">|</li>
                 <li class="nav-item dropdown">
-                    <a href="services.php" class="nav-link <?php echo ($current_page === 'services.php' || $current_page === 'rentals.php' || $current_page === 'sell-machine.php' || $current_page === 'repairs-services.php' || $current_page === 'operator-training.php') ? 'active' : ''; ?>">Services <span class="dropdown-caret">▼</span></a>
+                    <a href="services" class="nav-link <?php echo ($current_page === 'services.php' || $current_page === 'rentals.php' || $current_page === 'sell-machine.php' || $current_page === 'repairs-services.php' || $current_page === 'operator-training.php') ? 'active' : ''; ?>">Services <span class="dropdown-caret">▼</span></a>
                     <ul class="dropdown-menu">
                         <?php
                         $nav_services = get_services();
                         foreach ($nav_services as $ns):
-                            $href = "services.php#" . $ns['slug'];
+                            $href = "services#" . $ns['slug'];
                             if ($ns['slug'] === 'rentals') {
-                                $href = "rentals.php";
+                                $href = "rentals";
                             } elseif ($ns['slug'] === 'sell-machine') {
-                                $href = "sell-machine.php";
+                                $href = "sell-your-machine";
                             } elseif ($ns['slug'] === 'repairs-services') {
-                                $href = "repairs-services.php";
+                                $href = "mobile-service-unit";
                             } elseif ($ns['slug'] === 'operator-training') {
-                                $href = "operator-training.php";
+                                $href = "operator-training";
                             }
                         ?>
                             <li><a href="<?php echo htmlspecialchars($href); ?>"><?php echo htmlspecialchars($ns['title']); ?></a></li>
@@ -76,15 +78,26 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </li>
                 <li class="nav-separator">|</li>
                 <li class="nav-item">
-                    <a href="about.php" class="nav-link <?php echo $current_page === 'about.php' ? 'active' : ''; ?>">About</a>
+                    <a href="about-us" class="nav-link <?php echo $current_page === 'about.php' ? 'active' : ''; ?>">About</a>
                 </li>
                 <li class="nav-separator">|</li>
                 <li class="nav-item">
-                    <a href="blog.php" class="nav-link <?php echo $current_page === 'blog.php' ? 'active' : ''; ?>">Blog</a>
+                    <a href="news" class="nav-link <?php echo $current_page === 'blog.php' ? 'active' : ''; ?>">Blog</a>
                 </li>
                 <li class="nav-item">
-                    <button class="search-btn" aria-label="Search">🔍</button>
+                    <button class="search-btn" id="globalSearchBtn" aria-label="Search">🔍</button>
                 </li>
             </ul>
         </div>
     </header>
+
+    <!-- Global Search Overlay -->
+    <div id="searchOverlay" class="search-overlay">
+        <button class="search-close" id="searchCloseBtn" aria-label="Close Search">&times;</button>
+        <div class="search-overlay-content">
+            <form action="catalog.php" method="GET" class="search-form-overlay">
+                <input type="text" name="search" id="globalSearchInput" placeholder="Search forklifts, brands, models..." autocomplete="off">
+                <button type="submit" class="search-submit-btn">Search</button>
+            </form>
+        </div>
+    </div>

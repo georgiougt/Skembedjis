@@ -62,12 +62,6 @@ $categories = [
         'alt' => 'Truck Mounted Forklifts'
     ],
     [
-        'name' => 'Tyres',
-        'link' => 'tyres.php',
-        'image_key' => 'cat_tyres',
-        'alt' => 'Tyres'
-    ],
-    [
         'name' => 'Handling Equipment',
         'link' => 'handling.php',
         'image_key' => 'cat_handling',
@@ -80,16 +74,34 @@ $categories = [
         'alt' => 'Attachments'
     ],
     [
+        'name' => 'Tyres',
+        'link' => 'tyres.php',
+        'image_key' => 'cat_tyres',
+        'alt' => 'Tyres'
+    ],
+    [
         'name' => 'Batteries & Chargers',
         'link' => 'batteries-chargers.php',
         'image_key' => 'cat_batteries',
         'alt' => 'Batteries & Chargers'
     ],
     [
+        'name' => 'Cleaning Equipment',
+        'link' => 'catalog.php?category=cleaning-equipment',
+        'image_key' => 'cat_cleaning',
+        'alt' => 'Cleaning Equipment'
+    ],
+    [
         'name' => 'Ramps',
         'link' => 'ramps.php',
         'image_key' => 'cat_ramps',
         'alt' => 'Ramps'
+    ],
+    [
+        'name' => 'Miscellaneous',
+        'link' => 'catalog.php?category=miscellaneous',
+        'image_key' => 'cat_misc',
+        'alt' => 'Miscellaneous'
     ]
 ];
 
@@ -135,19 +147,35 @@ require_once __DIR__ . '/header.php';
     </section>
 
     <!-- Hyster Banner Split Block -->
-    <section class="hyster-split-banner-sec" style="background-color: #1e1e1e; min-height: 400px; display: flex; color: #ffffff;">
-        <div style="flex: 1; background-image: url('<?php echo htmlspecialchars($hyster_left_img); ?>'); background-size: cover; background-position: center; min-height: 400px;" role="img" aria-label="Hyster Forklift"></div>
-        <div style="flex: 1.2; background-color: #262626; display: flex; flex-direction: column; justify-content: center; padding: 4rem 5rem; text-align: left;">
-            <div style="max-width: 500px;">
-                <!-- Hyster Logo Box -->
-                <div style="border: 4px solid #fec107; display: inline-flex; flex-direction: column; align-items: center; padding: 0.5rem 1rem; margin-bottom: 2rem;">
-                    <span style="font-family: 'Arial Black', sans-serif; font-size: 2.2rem; font-weight: 900; color: #ffffff; line-height: 0.95; letter-spacing: -1px; text-transform: uppercase;">Hyster</span>
-                    <span style="font-size: 0.52rem; font-weight: 700; color: #fec107; margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.05em; font-family: inherit;">Strong Partners. Tough Trucks.™</span>
+    <section class="hyster-split-banner-sec" style="background-color: #2e2e2e; min-height: 380px; display: flex; color: #ffffff;">
+        <!-- Left Forklift Image -->
+        <div style="width: 32%; background-image: url('assets/forklift-eq.webp'); background-size: cover; background-position: center; min-height: 380px;" role="img" aria-label="Hyster Forklift"></div>
+        
+        <!-- Right Content Block -->
+        <div style="width: 68%; background-color: #2e2e2e; display: flex; align-items: center; padding: 3rem 4rem; text-align: left;">
+            <div style="display: flex; align-items: center; gap: 4rem; width: 100%;">
+                <!-- Yellow Hyster Logo -->
+                <div style="flex-shrink: 0;">
+                    <img src="assets/hyster-yellow-logo.webp" alt="Hyster - Strong Partners. Tough Trucks." style="max-height: 220px; width: auto; display: block;">
                 </div>
-
-                <p style="color: #a3a3a3; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; font-weight: 600;"><?php echo htmlspecialchars($hyster_sub['content']); ?></p>
-                <div style="width: 100%; height: 1px; background-color: rgba(255, 255, 255, 0.15); margin-bottom: 1.5rem;"></div>
-                <h3 style="font-size: 1.8rem; font-weight: 600; color: #ffffff; line-height: 1.35; letter-spacing: 0.02em;"><?php echo htmlspecialchars($hyster_title['content']); ?></h3>
+                
+                <!-- Text Column -->
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    <div style="font-size: 1.15rem; font-weight: 300; color: #e2e8f0; letter-spacing: 0.02em; margin-bottom: 0.75rem; font-family: inherit;">
+                        Explore Our Hyster Products
+                    </div>
+                    
+                    <!-- Top Line -->
+                    <div style="width: 100%; height: 1px; background-color: rgba(255, 255, 255, 0.25);"></div>
+                    
+                    <!-- Headline -->
+                    <h3 style="font-size: 1.7rem; font-weight: 400; color: #ffffff; text-transform: uppercase; line-height: 1.45; letter-spacing: 0.04em; margin: 1.75rem 0; font-family: inherit;">
+                        DISTINCTLY HYSTER,<br>BUILT FOR YOU
+                    </h3>
+                    
+                    <!-- Bottom Line -->
+                    <div style="width: 100%; height: 1px; background-color: rgba(255, 255, 255, 0.25);"></div>
+                </div>
             </div>
         </div>
     </section>

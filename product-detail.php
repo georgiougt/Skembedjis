@@ -147,10 +147,7 @@ require_once __DIR__ . '/header.php';
             <!-- Left Info -->
             <div style="flex: 1.5; min-width: 300px; text-align: left;">
                 <h2 style="font-size: 1.6rem; color: #475569; font-weight: 700; line-height: 1.35; margin: 0;">
-                    <?php 
-                    $conditionPrefix = ($product['status'] === 'New') ? 'Brand New' : 'Used';
-                    echo htmlspecialchars("{$conditionPrefix} {$product['brand']} {$product['category_name']} {$product['model']} – Capacity: {$product['lifting_capacity']}"); 
-                    ?>
+                    <?php echo htmlspecialchars($product['name']); ?>
                 </h2>
             </div>
 
@@ -286,10 +283,7 @@ require_once __DIR__ . '/header.php';
                         <div class="product-card-content" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
                             <div>
                                 <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.3; height: 2.6rem; overflow: hidden;">
-                                    <?php 
-                                    $relCond = ($rel['status'] === 'New') ? 'Brand New' : 'Used';
-                                    echo htmlspecialchars("{$relCond} {$rel['brand']} {$rel['category_name']} {$rel['model']} – Capacity: {$rel['lifting_capacity']}"); 
-                                    ?>
+                                    <?php echo htmlspecialchars($rel['name']); ?>
                                 </h3>
                                 
                                 <!-- Specs list -->

@@ -159,7 +159,7 @@ if ($settingsCount == 0) {
     $defaultSettings = [
         'site_name' => 'Y. Skembedjis & Sons Ltd',
         'contact_email' => 'info@skembedjis.com',
-        'contact_phone' => '+357 25 878700',
+        'contact_phone' => '+357 25 712265',
         'address' => 'Limassol, Cyprus',
         'footer_text' => '© ' . date('Y') . ' Y. Skembedjis & Sons Ltd. All rights reserved.'
     ];
@@ -247,7 +247,8 @@ if ($sectionsCount == 0) {
 $imagesCount = $db->query("SELECT COUNT(*) FROM site_images")->fetchColumn();
 if ($imagesCount == 0) {
     $defaultImages = [
-        ['logo', 'placeholder.php?text=Skembedjis+Logo&w=260&h=80', 'Y. Skembedjis & Sons Ltd Logo'],
+        ['logo', 'assets/logo-skembedjis.webp', 'Y. Skembedjis & Sons Ltd Logo'],
+        ['footer_logo', 'assets/footer-logo.webp', 'Y. Skembedjis & Sons Ltd Footer Logo'],
         ['hero_bg', 'placeholder.php?text=Hyster+Forklifts+Background&w=1920&h=900', 'Forklift banner background image'],
         ['hyster_badge', 'placeholder.php?text=Hyster+Yellow+Badge&w=200&h=200', 'Hyster Strong Partners Yellow Badge'],
         ['sol_1', 'placeholder.php?text=Industry+Sol+1&w=300&h=300', 'Industry Solution Image 1'],
@@ -272,7 +273,7 @@ if ($imagesCount == 0) {
         ['insta_3', 'placeholder.php?text=Instagram+Feed+3&w=400&h=400', 'Instagram Feed 3'],
         ['parts_collage', 'placeholder.php?text=Forklift+Spare+Parts+Collection&w=800&h=500', 'Spare parts display collage'],
         ['about_hero', 'placeholder.php?text=Historic+Famagusta+Store+1971&w=1200&h=600', 'Historic Famagusta Shop - Established in 1971'],
-        ['about_founder', 'placeholder.php?text=Founder+Yiannakis+Skembedjis&w=400&h=500', 'Founder Yiannakis Skembedjis Portrait'],
+        ['about_founder', 'assets/YIANNAKIS-SKEMBEDJIS-copy.jpeg', 'Founder Yiannakis Skembedjis Portrait'],
         ['rentals_banner_bg', 'placeholder.php?text=Forklift+Rentals+Hero&w=900&h=500', 'Rentals Banner Background Image'],
         ['sell_machine_banner', 'placeholder.php?text=Sell+Your+Machine+Banner&w=1200&h=500', 'Sell Your Machine page top banner'],
         ['repairs_mobile_van', 'placeholder.php?text=Mobile+Service+Van+Interior&w=800&h=500', 'Mobile service van equipped with tools'],
@@ -429,8 +430,8 @@ if ($branchesCount == 0) {
             'P.O.Box 53312, 3302 Limassol, Cyprus',
             '+357 25 712 265',
             'forkliftparts@skembedjis.com',
-            'placeholder.php?text=Limassol+Headquarters&w=600&h=400',
-            'https://maps.google.com'
+            'assets/Limassol-Headquarters-outside.jpg',
+            'https://www.google.com/maps/search/?api=1&query=Y.+Skembedjis+%26+Sons+Ltd+Limassol'
         ],
         [
             'Nicosia Branch',
@@ -438,8 +439,8 @@ if ($branchesCount == 0) {
             '',
             '+357 22 488 400',
             'nicosia@skembedjis.com',
-            'placeholder.php?text=Nicosia+Branch&w=600&h=400',
-            'https://maps.google.com'
+            'assets/Showroom-Nicosia-outside.jpg',
+            'https://www.google.com/maps/search/?api=1&query=Y.+Skembedjis+%26+Sons+Ltd+Nicosia'
         ],
         [
             'Training Centre',
@@ -447,8 +448,8 @@ if ($branchesCount == 0) {
             '',
             '+357 25 878 700',
             'training@skembedjis.com',
-            'placeholder.php?text=Training+Centre&w=600&h=400',
-            'https://maps.google.com'
+            'assets/Training.jpg',
+            'https://www.google.com/maps/search/?api=1&query=Y.+Skembedjis+%26+Sons+Ltd+Training+Centre+Limassol'
         ]
     ];
 
@@ -471,23 +472,28 @@ $videosCount = $db->query("SELECT COUNT(*) FROM corporate_videos")->fetchColumn(
 if ($videosCount == 0) {
     $defaultVideos = [
         [
-            'Famagusta / Nicosia Service Center Corporate Video',
-            'https://www.skembedjis.com/wp-content/uploads/2023/09/XRYSES-ETAIRIES-SKEMBEDJIS-SONS-NICOSIA-SERVICE-CENTER.mp4',
+            'Nicosia Showroom Tour',
+            'assets/XRYSES-ETAIRIES-SKEMBEDJIS-SONS-NICOSIA-SHOWROOM.mp4',
             ''
         ],
         [
-            'Limassol Service Center Facility Drone Video',
-            'placeholder.php?text=Limassol+Service+Center+Video',
+            'Nicosia Service Center Facility Video',
+            'assets/XRYSES-ETAIRIES-SKEMBEDJIS-SONS-NICOSIA-SERVICE-CENTER.mp4',
             ''
         ],
         [
-            'Cyprus Landscape and Fields Aerial View',
-            'placeholder.php?text=Cyprus+Landscape+Video',
+            'Limassol Service Center Facility Video',
+            'assets/XRYSES-ETAIRIES-SKEMBEDJIS-SONS-LIMASSOL-SERVICE-CENTER.mp4',
             ''
         ],
         [
-            'Industrial Area Coastal Drone View',
-            'placeholder.php?text=Industrial+Area+Video',
+            'Material Handling Equipment & Safety Training Center Video',
+            'assets/XRYSES-ETAIRIES-SKEMBEDJIS-SONS-HANDLING-EQUIPMENT-SAFETY-TRAINING-CENTER.mp4',
+            ''
+        ],
+        [
+            'VNA Project Showcase Video',
+            'assets/FINAL-Video-VNA-Project-skembedjis-Logo-only.mp4',
             ''
         ]
     ];
@@ -711,5 +717,8 @@ function get_product_energies() {
     global $db;
     return $db->query("SELECT DISTINCT energy FROM products WHERE energy IS NOT NULL AND energy != 'N/A' AND energy != '' ORDER BY energy ASC")->fetchAll(PDO::FETCH_COLUMN);
 }
+
+
+
 
 

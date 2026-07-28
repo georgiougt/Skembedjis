@@ -38,10 +38,13 @@ $founderImg = get_image_path('about_founder', 'Founder Yiannakis Skembedjis');
         </div>
     </section>
 
-    <!-- Hero Image Section -->
+    <!-- Hero Video Section -->
     <section class="about-hero-img-sec">
         <div class="about-hero-img-container">
-            <img src="<?php echo htmlspecialchars($heroImg); ?>" alt="Historic Store 1971">
+            <video autoplay muted loop playsinline style="width: 100%; height: auto; display: block;">
+                <source src="assets/Skembedjis-trimmed.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
         </div>
     </section>
 

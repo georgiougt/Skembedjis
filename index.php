@@ -7,7 +7,7 @@ require_once __DIR__ . '/db.php';
 // Fetch settings
 $siteName = get_setting('site_name', 'Y. Skembedjis & Sons Ltd');
 $email = get_setting('contact_email', 'info@skembedjis.com');
-$phone = get_setting('contact_phone', '+357 25 878700');
+$phone = get_setting('contact_phone', '+357 25 712265');
 $address = get_setting('address', 'Limassol, Cyprus');
 $footerText = get_setting('footer_text', '© ' . date('Y') . ' Y. Skembedjis & Sons Ltd. All rights reserved.');
 
@@ -54,20 +54,42 @@ $faqs = get_faqs();
 $logoImg = get_image_path('logo', 'Skembedjis Logo');
 $heroBg = get_image_path('hero_bg', 'Hero Banner Background');
 $hysterLogo = get_image_path('hyster_badge', 'Hyster Badge');
-$sol1 = get_image_path('sol_1', 'Solution 1');
-$sol2 = get_image_path('sol_2', 'Solution 2');
-$sol3 = get_image_path('sol_3', 'Solution 3');
-$sol4 = get_image_path('sol_4', 'Solution 4');
-$catalogCover = get_image_path('catalog_cover', 'Catalog Cover');
+// Industry Solutions Images
+$industry_solutions = [
+    ['name' => 'Food & Beverage', 'img' => 'assets/industry-solutions/food.webp'],
+    ['name' => 'Logistics', 'img' => 'assets/industry-solutions/logistics.webp'],
+    ['name' => 'Metal', 'img' => 'assets/industry-solutions/metal-01.webp'],
+    ['name' => 'Paper', 'img' => 'assets/industry-solutions/Paper-1.webp'],
+    ['name' => 'Pharmacy', 'img' => 'assets/industry-solutions/pharmacy-01.webp'],
+    ['name' => 'Ports', 'img' => 'assets/industry-solutions/ports.webp'],
+    ['name' => 'Recycling', 'img' => 'assets/industry-solutions/recycling-01.webp'],
+    ['name' => 'Retail', 'img' => 'assets/industry-solutions/retail.webp'],
+    ['name' => 'Supply Chain', 'img' => 'assets/industry-solutions/supply-01.webp'],
+    ['name' => 'Wood', 'img' => 'assets/industry-solutions/wood-01.webp'],
+];
+
+// Collaborator Logos
+$collaborators_list = [
+    ['name' => 'Hyster', 'img' => 'assets/collaborators/hyster.webp'],
+    ['name' => 'HC Forklift', 'img' => 'assets/collaborators/hc-320x202.webp'],
+    ['name' => 'EP Equipment', 'img' => 'assets/collaborators/epas-1-301x202.webp'],
+    ['name' => 'Hako', 'img' => 'assets/collaborators/Hako-Logo.svgmini-1-250x202.webp'],
+    ['name' => 'FAAM Batteries', 'img' => 'assets/collaborators/LOGO_FAAM.webp'],
+    ['name' => 'Bada', 'img' => 'assets/collaborators/Q_BADA.webp'],
+    ['name' => 'Trelleborg', 'img' => 'assets/collaborators/Trelleborg-320x202.webp'],
+    ['name' => 'Bolzoni Auramo', 'img' => 'assets/collaborators/bolzoni.webp'],
+    ['name' => 'ATIB Elettronica', 'img' => 'assets/collaborators/atib.webp'],
+    ['name' => 'Easyramps', 'img' => 'assets/collaborators/easyramps.webp'],
+    ['name' => 'Sunbear', 'img' => 'assets/collaborators/Sunbear-Logo.webp'],
+];
+
+$catalogCover = 'assets/catalog-cover.webp';
+$catalogBg = 'assets/catalogue.webp';
 $trainingBg = get_image_path('training_bg', 'Training Background');
 $careersImg = get_image_path('careers_img', 'Careers Image');
-$collab1 = get_image_path('collab_1', 'ATIB');
-$collab2 = get_image_path('collab_2', 'Easyramps');
-$collab3 = get_image_path('collab_3', 'Hyster');
-$collab4 = get_image_path('collab_4', 'AA');
-$webHyster = get_image_path('web_hyster', 'Hyster Site');
-$webHCHouse = get_image_path('web_hchouse', 'HC Forklift House');
-$webED = get_image_path('web_ed', 'ED Site');
+$webHyster = 'assets/collaborators/HYSTER-LOGO-320x202.webp';
+$webHCHouse = 'assets/collaborators/hc-320x202.webp';
+$webED = 'assets/collaborators/epas-1-301x202.webp';
 $appStoreBtn = get_image_path('app_store_btn', 'App Store');
 $googlePlayBtn = get_image_path('google_play_btn', 'Google Play');
 $insta1 = get_image_path('insta_1', 'Instagram 1');
@@ -76,12 +98,21 @@ $insta3 = get_image_path('insta_3', 'Instagram 3');
 require_once __DIR__ . '/header.php';
 ?>
 
-    <!-- Hero Banner Section -->
-    <section class="hero" style="background-image: url('<?php echo htmlspecialchars($heroBg); ?>');">
-        <div class="hyster-badge">
-            <img src="<?php echo htmlspecialchars($hysterLogo); ?>" alt="Hyster Logo">
-            <h2><?php echo htmlspecialchars($hero_title['title']); ?></h2>
-            <h2><?php echo htmlspecialchars($hero_subtitle['title']); ?></h2>
+    <!-- Hero Banner Slider Section -->
+    <section class="hero-slider-section">
+        <div class="hero-slider">
+            <div class="slide active" style="background-image: url('assets/sliders/banner1.webp');"></div>
+            <div class="slide" style="background-image: url('assets/sliders/banner2.webp');"></div>
+            <div class="slide" style="background-image: url('assets/sliders/banner3.webp');"></div>
+        </div>
+
+        <button class="slider-arrow prev" id="sliderPrev" aria-label="Previous Slide">&#10094;</button>
+        <button class="slider-arrow next" id="sliderNext" aria-label="Next Slide">&#10095;</button>
+
+        <div class="slider-dots" id="sliderDots">
+            <span class="dot active" data-index="0"></span>
+            <span class="dot" data-index="1"></span>
+            <span class="dot" data-index="2"></span>
         </div>
     </section>
 
@@ -106,26 +137,14 @@ require_once __DIR__ . '/header.php';
             </div>
             
             <div class="solutions-circles">
-                <div class="circle-item">
-                    <div class="circle-frame">
-                        <img src="<?php echo htmlspecialchars($sol1); ?>" alt="Solution 1">
+                <?php foreach ($industry_solutions as $sol): ?>
+                    <div class="circle-item">
+                        <div class="circle-frame">
+                            <img src="<?php echo htmlspecialchars($sol['img']); ?>" alt="<?php echo htmlspecialchars($sol['name']); ?>">
+                        </div>
+                        <span class="circle-label"><?php echo htmlspecialchars($sol['name']); ?></span>
                     </div>
-                </div>
-                <div class="circle-item">
-                    <div class="circle-frame">
-                        <img src="<?php echo htmlspecialchars($sol2); ?>" alt="Solution 2">
-                    </div>
-                </div>
-                <div class="circle-item">
-                    <div class="circle-frame">
-                        <img src="<?php echo htmlspecialchars($sol3); ?>" alt="Solution 3">
-                    </div>
-                </div>
-                <div class="circle-item">
-                    <div class="circle-frame">
-                        <img src="<?php echo htmlspecialchars($sol4); ?>" alt="Solution 4">
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
@@ -143,12 +162,17 @@ require_once __DIR__ . '/header.php';
                 </div>
             </div>
             
-            <div class="handling-right">
-                <div class="catalog-img-container">
-                    <img src="<?php echo htmlspecialchars($catalogCover); ?>" alt="Catalog Booklet Cover">
-                </div>
+            <div class="handling-right" style="background-image: url('<?php echo htmlspecialchars($catalogBg); ?>');">
                 <div class="catalog-btn-container">
-                    <a href="catalog.pdf" download class="btn btn-gray-box"><?php echo htmlspecialchars($catalog_btn['content']); ?></a>
+                    <a href="catalog.pdf" download class="btn btn-gray-box">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <?php echo htmlspecialchars($catalog_btn['content']); ?>
+                    </a>
+                </div>
+                <div class="catalog-img-container">
+                    <a href="catalog.pdf" download title="Download Products & Services Catalogue">
+                        <img src="<?php echo htmlspecialchars($catalogCover); ?>" alt="Products & Services Catalogue Booklet">
+                    </a>
                 </div>
             </div>
         </div>
@@ -172,7 +196,7 @@ require_once __DIR__ . '/header.php';
             <div class="divider-line"></div>
             <h3><?php echo htmlspecialchars($join_title['title']); ?></h3>
             <p><?php echo htmlspecialchars($join_desc['content']); ?></p>
-            <a href="careers.php" class="btn btn-blue-outline"><?php echo htmlspecialchars($join_btn['content']); ?></a>
+            <a href="careers" class="btn btn-blue-outline"><?php echo htmlspecialchars($join_btn['content']); ?></a>
         </div>
         
         <div class="careers-middle">
@@ -189,12 +213,15 @@ require_once __DIR__ . '/header.php';
         <div class="container">
             <div class="divider-line centered"></div>
             <h3 class="collab-title"><?php echo htmlspecialchars($collab_title['title']); ?></h3>
-            
-            <div class="collab-row">
-                <img src="<?php echo htmlspecialchars($collab1); ?>" alt="ATIB Elettronica">
-                <img src="<?php echo htmlspecialchars($collab2); ?>" alt="Easyramps">
-                <img src="<?php echo htmlspecialchars($collab3); ?>" alt="Hyster">
-                <img src="<?php echo htmlspecialchars($collab4); ?>" alt="AA partner">
+        </div>
+        
+        <div class="collab-slider">
+            <div class="collab-track">
+                <?php foreach (array_merge($collaborators_list, $collaborators_list) as $collab): ?>
+                    <div class="collab-item">
+                        <img src="<?php echo htmlspecialchars($collab['img']); ?>" alt="<?php echo htmlspecialchars($collab['name']); ?>" title="<?php echo htmlspecialchars($collab['name']); ?>">
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
@@ -280,6 +307,66 @@ require_once __DIR__ . '/header.php';
     </section>
 
     <script>
+        // Hero Slider Logic
+        (function() {
+            const slides = document.querySelectorAll('.hero-slider .slide');
+            const dots = document.querySelectorAll('.slider-dots .dot');
+            const prevBtn = document.getElementById('sliderPrev');
+            const nextBtn = document.getElementById('sliderNext');
+            let currentIndex = 0;
+            let slideInterval;
+
+            function goToSlide(index) {
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === index);
+                });
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === index);
+                });
+                currentIndex = index;
+            }
+
+            function nextSlide() {
+                let nextIndex = (currentIndex + 1) % slides.length;
+                goToSlide(nextIndex);
+            }
+
+            function prevSlide() {
+                let prevIndex = (currentIndex - 1 + slides.length) % slides.length;
+                goToSlide(prevIndex);
+            }
+
+            function startTimer() {
+                stopTimer();
+                slideInterval = setInterval(nextSlide, 5000);
+            }
+
+            function stopTimer() {
+                if (slideInterval) clearInterval(slideInterval);
+            }
+
+            if (prevBtn && nextBtn) {
+                nextBtn.addEventListener('click', () => { nextSlide(); startTimer(); });
+                prevBtn.addEventListener('click', () => { prevSlide(); startTimer(); });
+            }
+
+            dots.forEach(dot => {
+                dot.addEventListener('click', (e) => {
+                    const idx = parseInt(e.target.getAttribute('data-index'));
+                    goToSlide(idx);
+                    startTimer();
+                });
+            });
+
+            const heroSection = document.querySelector('.hero-slider-section');
+            if (heroSection) {
+                heroSection.addEventListener('mouseenter', stopTimer);
+                heroSection.addEventListener('mouseleave', startTimer);
+            }
+
+            startTimer();
+        })();
+
         // FAQ Accordion Toggle
         const faqQuestions = document.querySelectorAll('.faq-question');
         faqQuestions.forEach(btn => {
@@ -298,7 +385,6 @@ require_once __DIR__ . '/header.php';
                 
                 if (!isActive) {
                     group.classList.add('active');
-                    // Set height based on inner scrollHeight for smooth transition
                     answer.style.maxHeight = answer.scrollHeight + 'px';
                 }
             });
