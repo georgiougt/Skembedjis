@@ -720,16 +720,16 @@ function get_products($filters = []) {
         $query .= " WHERE " . implode(" AND ", $where);
     }
     
-    if (!empty($filters['category']) && $filters['category'] === 'forklifts') {
-        $query .= " ORDER BY 
-            CASE 
-                WHEN p.status = 'New' AND UPPER(p.brand) = 'HYSTER' THEN 1
-                WHEN p.status = 'New' AND UPPER(p.brand) = 'HC' THEN 2
-                ELSE 3
-            END ASC, p.id DESC";
-    } else {
-        $query .= " ORDER BY p.id DESC";
-    }
+    $query .= " ORDER BY 
+        CASE 
+            WHEN UPPER(p.brand) LIKE 'HYSTER%' AND (p.status = 'New' OR p.status = 'Brand New') THEN 1
+            WHEN UPPER(p.brand) LIKE 'HYSTER%' THEN 2
+            WHEN UPPER(p.brand) LIKE 'YALE%' AND (p.status = 'New' OR p.status = 'Brand New') THEN 3
+            WHEN UPPER(p.brand) LIKE 'YALE%' THEN 4
+            WHEN (UPPER(p.brand) LIKE 'HC%' OR UPPER(p.brand) LIKE 'HANGCHA%') AND (p.status = 'New' OR p.status = 'Brand New') THEN 5
+            WHEN (UPPER(p.brand) LIKE 'HC%' OR UPPER(p.brand) LIKE 'HANGCHA%') THEN 6
+            ELSE 7
+        END ASC, p.id DESC";
     
     $stmt = $db->prepare($query);
     $stmt->execute($params);
