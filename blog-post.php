@@ -41,7 +41,7 @@ if (!$post) {
             </div>
             
             <div class="post-body-content" style="color: #4b5563; font-size: 1.1rem; line-height: 1.8;">
-                <?php echo nl2br($post['content']); ?>
+                <?php echo $post['content']; ?>
             </div>
         </div>
     </article>

@@ -15,6 +15,7 @@ try {
     $db = new PDO("sqlite:" . $dbPath);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    $db->exec("PRAGMA busy_timeout = 5000;");
 } catch (PDOException $e) {
     die("Database connection failed: " . $e->getMessage());
 }
@@ -139,6 +140,17 @@ $db->exec("
         location TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS sync_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sync_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+        status TEXT NOT NULL,
+        source TEXT NOT NULL,
+        message TEXT,
+        added_items TEXT,
+        removed_items TEXT,
+        updated_items TEXT
+    );
 ");
 
 // Seed default admin user if none exists
@@ -168,6 +180,18 @@ if ($settingsCount == 0) {
     foreach ($defaultSettings as $key => $val) {
         $stmt->execute([':key' => $key, ':value' => $val]);
     }
+}
+
+// Always ensure 1C integration settings exist
+$defaultOneCSettings = [
+    'onec_web_flag' => 'ShowOnWebsite',
+    'onec_wsdl' => 'http://213.7.198.218:8080/SKEMBEDJIS/ws/ws1.1cws?wsdl',
+    'onec_login' => 'ecommerce',
+    'onec_password' => '3c0mm3rc3*'
+];
+$stmtOneC = $db->prepare("INSERT OR IGNORE INTO site_settings (key, value) VALUES (:key, :value)");
+foreach ($defaultOneCSettings as $k => $v) {
+    $stmtOneC->execute([':key' => $k, ':value' => $v]);
 }
 
 // Seed default content sections if empty
@@ -696,7 +720,16 @@ function get_products($filters = []) {
         $query .= " WHERE " . implode(" AND ", $where);
     }
     
-    $query .= " ORDER BY p.id DESC";
+    if (!empty($filters['category']) && $filters['category'] === 'forklifts') {
+        $query .= " ORDER BY 
+            CASE 
+                WHEN p.status = 'New' AND UPPER(p.brand) = 'HYSTER' THEN 1
+                WHEN p.status = 'New' AND UPPER(p.brand) = 'HC' THEN 2
+                ELSE 3
+            END ASC, p.id DESC";
+    } else {
+        $query .= " ORDER BY p.id DESC";
+    }
     
     $stmt = $db->prepare($query);
     $stmt->execute($params);
@@ -710,12 +743,34 @@ function get_product_brands() {
 
 function get_product_capacities() {
     global $db;
-    return $db->query("SELECT DISTINCT lifting_capacity FROM products WHERE lifting_capacity IS NOT NULL AND lifting_capacity != 'N/A' AND lifting_capacity != '' ORDER BY lifting_capacity ASC")->fetchAll(PDO::FETCH_COLUMN);
+    $capacities = $db->query("SELECT DISTINCT lifting_capacity FROM products WHERE lifting_capacity IS NOT NULL AND lifting_capacity != 'N/A' AND lifting_capacity != ''")->fetchAll(PDO::FETCH_COLUMN);
+    $capacities = array_map(function($c) {
+        return str_replace(['κg', 'KG', 'Kg'], 'kg', $c);
+    }, $capacities);
+    $capacities = array_values(array_unique($capacities));
+
+    usort($capacities, function($a, $b) {
+        preg_match('/^\d+/', $a, $mA);
+        preg_match('/^\d+/', $b, $mB);
+        $valA = isset($mA[0]) ? (int)$mA[0] : 0;
+        $valB = isset($mB[0]) ? (int)$mB[0] : 0;
+        if ($valA === $valB) {
+            return strnatcmp($a, $b);
+        }
+        return $valA <=> $valB;
+    });
+
+    return $capacities;
 }
 
 function get_product_energies() {
     global $db;
-    return $db->query("SELECT DISTINCT energy FROM products WHERE energy IS NOT NULL AND energy != 'N/A' AND energy != '' ORDER BY energy ASC")->fetchAll(PDO::FETCH_COLUMN);
+    $invalidMachineTypes = ['VNA', 'Manual Stacker', 'Truck Mounted Forklifts', 'Electric Warehouse Equipment', 'Electric Warehouse  Equipment', 'Electric Warehouse Equipment Lithium Ion Battery'];
+    $energies = $db->query("SELECT DISTINCT energy FROM products WHERE energy IS NOT NULL AND energy != 'N/A' AND energy != '' ORDER BY energy ASC")->fetchAll(PDO::FETCH_COLUMN);
+    $filtered = array_filter($energies, function($e) use ($invalidMachineTypes) {
+        return !in_array($e, $invalidMachineTypes);
+    });
+    return array_values(array_unique($filtered));
 }
 
 

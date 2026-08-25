@@ -153,7 +153,7 @@ require_once __DIR__ . '/header.php';
 
             <!-- Price Info -->
             <div style="flex: 0.8; min-width: 150px; text-align: center;">
-                <span style="font-size: 2.2rem; font-weight: 800; color: var(--primary-blue); font-family: var(--font-heading);">
+                <span style="font-size: 2.2rem; font-weight: 800; color: var(--primary-blue); font-family: var(--font-heading); white-space: nowrap;">
                     <?php echo $product['price'] > 0 ? number_format($product['price'], 0, ',', '.') . ',00 €' : 'Inquire Price'; ?>
                 </span>
             </div>
@@ -173,7 +173,7 @@ require_once __DIR__ . '/header.php';
 
     <!-- Main Profile Content Body -->
     <section class="product-profile-body-sec" style="padding: 4rem 0; background-color: #ffffff;">
-        <div class="container" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 3.5rem; align-items: start;">
+        <div class="container product-profile-grid">
             
             <!-- Left Column: Gallery -->
             <div>
@@ -207,47 +207,55 @@ require_once __DIR__ . '/header.php';
                 <div class="profile-specs-panel" style="background-color: #eaeaea; border-radius: 2px; padding: 2rem 2.5rem; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
                     
                     <ul class="profile-specs-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.95rem; color: #475569; font-weight: 500;">
-                        <li>
-                            <strong style="color: #64748b; font-weight: 600; min-width: 180px; display: inline-block;">Brand:</strong>
-                            <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($product['brand']); ?></span>
-                        </li>
-                        <li>
-                            <strong style="color: #64748b; font-weight: 600; min-width: 180px; display: inline-block;">Model:</strong>
-                            <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($product['model']); ?></span>
-                        </li>
+                        <?php if (!empty($product['brand']) && $product['brand'] !== 'N/A'): ?>
+                            <li>
+                                <strong style="color: #64748b; font-weight: 600; min-width: 180px; display: inline-block;">Brand:</strong>
+                                <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($product['brand'] ?? ''); ?></span>
+                            </li>
+                        <?php endif; ?>
+                        <?php if (!empty($product['model']) && $product['model'] !== 'N/A'): ?>
+                            <li>
+                                <strong style="color: #64748b; font-weight: 600; min-width: 180px; display: inline-block;">Model:</strong>
+                                <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($product['model'] ?? ''); ?></span>
+                            </li>
+                        <?php endif; ?>
                         <li>
                             <strong style="color: #64748b; font-weight: 600; min-width: 180px; display: inline-block;">Condition:</strong>
                             <span style="color: #1e293b; font-weight: 700;"><?php echo ($product['status'] === 'New') ? 'Brand New' : 'Used'; ?></span>
                         </li>
                         <li>
                             <strong style="color: #64748b; font-weight: 600; min-width: 180px; display: inline-block;">Type:</strong>
-                            <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($product['category_name']); ?></span>
+                            <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($product['category_name'] ?? ''); ?></span>
                         </li>
-                        <li>
-                            <strong style="color: #64748b; font-weight: 600; min-width: 180px; display: inline-block;">Capacity:</strong>
-                            <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($product['lifting_capacity']); ?></span>
-                        </li>
+                        <?php if (!empty($product['lifting_capacity']) && $product['lifting_capacity'] !== 'N/A'): ?>
+                            <li>
+                                <strong style="color: #64748b; font-weight: 600; min-width: 180px; display: inline-block;">Capacity:</strong>
+                                <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($product['lifting_capacity'] ?? ''); ?></span>
+                            </li>
+                        <?php endif; ?>
                         <?php if (!empty($product['lift_height']) && $product['lift_height'] !== 'N/A'): ?>
                             <li>
                                 <strong style="color: #64748b; font-weight: 600; min-width: 180px; display: inline-block;">Lift Height Capacity:</strong>
-                                <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($product['lift_height']); ?></span>
+                                <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($product['lift_height'] ?? ''); ?></span>
                             </li>
                         <?php endif; ?>
                         <?php if (!empty($product['attachment']) && $product['attachment'] !== 'N/A' && $product['attachment'] !== 'None'): ?>
                             <li>
                                 <strong style="color: #64748b; font-weight: 600; min-width: 180px; display: inline-block;">Attachment:</strong>
-                                <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($product['attachment']); ?></span>
+                                <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($product['attachment'] ?? ''); ?></span>
                             </li>
                         <?php endif; ?>
-                        <li>
-                            <strong style="color: #64748b; font-weight: 600; min-width: 180px; display: inline-block;">Power:</strong>
-                            <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($product['energy']); ?></span>
-                        </li>
+                        <?php if (!empty($product['energy']) && $product['energy'] !== 'N/A'): ?>
+                            <li>
+                                <strong style="color: #64748b; font-weight: 600; min-width: 180px; display: inline-block;">Power:</strong>
+                                <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($product['energy'] ?? ''); ?></span>
+                            </li>
+                        <?php endif; ?>
                     </ul>
 
                     <!-- Brochure Download (PDF Icon) -->
                     <div style="margin-top: 2.5rem; text-align: center; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 1.5rem;">
-                        <a href="placeholder.php?text=Brochure+PDF" target="_blank" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #475569; font-weight: 700; text-decoration: none; font-size: 0.95rem; transition: color 0.2s;" onmouseover="this.style.color='#fec107'" onmouseout="this.style.color='#475569'">
+                        <a href="generate-pdf.php?slug=<?php echo urlencode($product['slug']); ?>" target="_blank" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #475569; font-weight: 700; text-decoration: none; font-size: 0.95rem; transition: color 0.2s;" onmouseover="this.style.color='#fec107'" onmouseout="this.style.color='#475569'">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 28px; height: 28px; color: #dc2626;">
                                 <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V3.375A3.75 3.75 0 009 1.5H5.625zM7.5 15a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 017.5 15zm.75 2.25a.75.75 0 000 1.5h7.5a.75.75 0 000-1.5h-7.5z" clip-rule="evenodd" />
                                 <path d="M12.971 1.816A5.23 5.23 0 0114.25 3v3.375c0 .621.504 1.125 1.125 1.125h3.375c.465 0 .901.18 1.184.494A1.5 1.5 0 0120 9.25V18a3 3 0 01-3 3H7a3 3 0 01-3-3V5a3 3 0 013-3h5.971z" />
@@ -259,7 +267,78 @@ require_once __DIR__ . '/header.php';
 
             </div>
 
-        </div>
+        <!-- Product Description Overview -->
+        <?php if (!empty($product['description'])): ?>
+            <style>
+                .premium-product-desc-container {
+                    margin-top: 3.5rem;
+                    border-top: 1px solid var(--border-gray);
+                    padding-top: 3rem;
+                    text-align: left;
+                }
+                .premium-product-desc-container h3 {
+                    font-size: 1.5rem;
+                    color: #1e293b;
+                    margin-bottom: 1.5rem;
+                    font-weight: 700;
+                    border-bottom: 2px solid var(--accent-orange);
+                    display: inline-block;
+                    padding-bottom: 0.5rem;
+                    font-family: var(--font-heading);
+                }
+                .premium-product-desc-body {
+                    color: #475569;
+                    line-height: 1.8;
+                    font-size: 1.05rem;
+                }
+                .premium-product-desc-body ul {
+                    list-style-type: disc !important;
+                    padding-left: 2rem !important;
+                    margin: 1rem 0 !important;
+                }
+                .premium-product-desc-body li {
+                    margin-bottom: 0.65rem !important;
+                    color: #475569 !important;
+                    list-style-type: disc !important;
+                }
+                .premium-product-desc-body li li {
+                    list-style-type: circle !important;
+                }
+                .premium-product-desc-body img {
+                    max-width: 100%;
+                    height: auto;
+                    display: block;
+                    margin: 2rem auto;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 4px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+                    padding: 0.5rem;
+                    background: #ffffff;
+                }
+                .premium-product-desc-body p {
+                    margin-bottom: 1.25rem;
+                }
+                .premium-product-desc-body strong {
+                    color: #1e293b;
+                    font-weight: 700;
+                }
+            </style>
+            <div class="container">
+                <div class="premium-product-desc-container">
+                    <h3>Product Overview</h3>
+                    <div class="premium-product-desc-body">
+                        <?php 
+                        $desc = $product['description'];
+                        if (preg_match('/<[a-z][^>]*>/i', $desc)) {
+                            echo $desc;
+                        } else {
+                            echo nl2br(htmlspecialchars($desc));
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
     </section>
 
     <!-- Related Products Grid Section -->
@@ -282,7 +361,7 @@ require_once __DIR__ . '/header.php';
 
                         <div class="product-card-content" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
                             <div>
-                                <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.3; height: 2.6rem; overflow: hidden;">
+                                <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.3; overflow-wrap: break-word;">
                                     <?php echo htmlspecialchars($rel['name']); ?>
                                 </h3>
                                 

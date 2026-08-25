@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteBase /
+RewriteBase /new/
 
 # Force HTTPS & WWW if needed (or canonical domain)
 
@@ -12,6 +12,7 @@ RewriteRule ^products/?$ products.php [L,QSA]
 RewriteRule ^equipment/?$ products.php [L,QSA]
 RewriteRule ^services/?$ services.php [L,QSA]
 RewriteRule ^spare-parts/?$ spare-parts.php [L,QSA]
+RewriteRule ^parts/?$ spare-parts.php [L,QSA]
 RewriteRule ^blog/?$ blog.php [L,QSA]
 RewriteRule ^news/?$ blog.php [L,QSA]
 RewriteRule ^branches/?$ branches.php [L,QSA]
@@ -24,6 +25,7 @@ RewriteRule ^rentals/?$ rentals.php [L,QSA]
 RewriteRule ^sell-your-machine/?$ sell-machine.php [L,QSA]
 RewriteRule ^sell-machine/?$ sell-machine.php [L,QSA]
 RewriteRule ^mobile-service-unit/?$ repairs-services.php [L,QSA]
+RewriteRule ^mobile-service-units/?$ repairs-services.php [L,QSA]
 RewriteRule ^repairs-services/?$ repairs-services.php [L,QSA]
 RewriteRule ^operator-training/?$ operator-training.php [L,QSA]
 
@@ -40,6 +42,7 @@ RewriteRule ^(?:product-category/)?handling-equipment/?$ handling.php [L,QSA]
 RewriteRule ^(?:product-category/)?handling/?$ handling.php [L,QSA]
 RewriteRule ^(?:product-category/)?attachments/?$ attachments.php [L,QSA]
 RewriteRule ^(?:product-category/)?tyres/?$ tyres.php [L,QSA]
+RewriteRule ^(?:product-category/)?tyres-2/?$ tyres.php [L,QSA]
 RewriteRule ^(?:product-category/)?batteries-chargers/?$ batteries-chargers.php [L,QSA]
 RewriteRule ^(?:product-category/)?batteries/?$ batteries-chargers.php [L,QSA]
 RewriteRule ^(?:product-category/)?cleaning-equipment/?$ catalog.php?category=cleaning-equipment [L,QSA]

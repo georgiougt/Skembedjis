@@ -102,7 +102,7 @@ require_once __DIR__ . '/header.php';
     <section class="hero-slider-section">
         <div class="hero-slider">
             <div class="slide active" style="background-image: url('assets/sliders/banner1.webp');"></div>
-            <div class="slide" style="background-image: url('assets/sliders/banner2.webp');"></div>
+            <div class="slide" style="background-image: url('assets/slaiders/banner2.webp');"></div>
             <div class="slide" style="background-image: url('assets/sliders/banner3.webp');"></div>
         </div>
 
@@ -167,11 +167,6 @@ require_once __DIR__ . '/header.php';
                     <a href="catalog.pdf" download class="btn btn-gray-box">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                         <?php echo htmlspecialchars($catalog_btn['content']); ?>
-                    </a>
-                </div>
-                <div class="catalog-img-container">
-                    <a href="catalog.pdf" download title="Download Products & Services Catalogue">
-                        <img src="<?php echo htmlspecialchars($catalogCover); ?>" alt="Products & Services Catalogue Booklet">
                     </a>
                 </div>
             </div>

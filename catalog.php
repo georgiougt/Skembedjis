@@ -201,20 +201,20 @@ require_once __DIR__ . '/header.php';
                                             <?php endif; ?>
                                             <?php if(!empty($p['mast_type']) && $p['mast_type'] !== 'N/A'): ?>
                                                 <div class="spec-item">
-                                                    <strong>Mast Type:</strong>
+                                                    <strong>Lift Height Capacity:</strong>
                                                     <span><?php echo htmlspecialchars($p['mast_type']); ?></span>
                                                 </div>
                                             <?php endif; ?>
                                             <?php if(!empty($p['energy']) && $p['energy'] !== 'N/A'): ?>
                                                 <div class="spec-item">
-                                                    <strong>Energy:</strong>
+                                                    <strong>Power:</strong>
                                                     <span><?php echo htmlspecialchars($p['energy']); ?></span>
                                                 </div>
                                             <?php endif; ?>
                                             <?php if($p['price'] > 0): ?>
                                                 <div class="spec-item" style="border-top: 1px dashed var(--border-gray); padding-top: 0.5rem; margin-top: 0.5rem;">
                                                     <strong>Price:</strong>
-                                                    <span style="color: var(--accent-orange); font-weight: 800; font-size: 1.05rem;"><?php echo number_format($p['price'], 0, ',', '.'); ?> €</span>
+                                                    <span style="color: var(--accent-orange); font-weight: 800; font-size: 1.05rem; white-space: nowrap;"><?php echo number_format($p['price'], 0, ',', '.'); ?> €</span>
                                                 </div>
                                             <?php endif; ?>
                                         </div>

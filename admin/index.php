@@ -5,9 +5,53 @@
 require_once __DIR__ . '/auth_check.php';
 check_login();
 
+// Handle AJAX Sync Requests
+if (isset($_GET['action']) && $_GET['action'] === 'ajax_sync') {
+    header('Content-Type: application/json');
+    require_once __DIR__ . '/../sync_products.php';
+    
+    $step = $_GET['step'] ?? 'fetch';
+    $source = $_GET['source'] ?? 'json';
+    
+    if ($step === 'fetch') {
+        if ($source === 'soap') {
+            $res = pull_soap_and_save_json();
+        } else {
+            $res = ['success' => true, 'message' => 'Local JSON source ready.'];
+            
+            // Get total count of items in local json
+            $jsonPath = __DIR__ . '/../items.json';
+            if (file_exists($jsonPath)) {
+                $all = json_decode(file_get_contents($jsonPath), true);
+                if (is_array($all)) {
+                    $res['total_items'] = count($all);
+                } else {
+                    $res = ['success' => false, 'message' => 'Failed to parse local items.json.'];
+                }
+            } else {
+                $res = ['success' => false, 'message' => 'items.json file not found.'];
+            }
+        }
+        echo json_encode($res);
+        exit;
+    }
+    
+    if ($step === 'sync') {
+        $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 30;
+        
+        $res = run_products_sync(null, $offset, $limit);
+        echo json_encode($res);
+        exit;
+    }
+    
+    echo json_encode(['success' => false, 'message' => 'Invalid sync step.']);
+    exit;
+}
+
 $tab = $_GET['tab'] ?? 'dashboard';
-$success_msg = '';
-$error_msg = '';
+$success_msg = $_GET['success'] ?? '';
+$error_msg = $_GET['error'] ?? '';
 
 // Handle POST actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -22,7 +66,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     elseif ($action === 'sync_catalog') {
         require_once __DIR__ . '/../sync_products.php';
-        $res = run_products_sync();
+        $source = $_POST['sync_source'] ?? 'json';
+        if ($source === 'soap') {
+            $res = pull_soap_and_sync();
+        } else {
+            $res = run_products_sync();
+        }
         if ($res['success']) {
             $success_msg = $res['message'];
         } else {
@@ -355,6 +404,7 @@ $total_machine_requests = $db->query("SELECT COUNT(*) FROM machine_requests")->f
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
     <title>Admin Control Panel - Portfolio Dashboard</title>
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="admin-style.css">
@@ -445,6 +495,9 @@ $total_machine_requests = $db->query("SELECT COUNT(*) FROM machine_requests")->f
                 <a href="?tab=settings" class="admin-nav-item <?php echo $tab === 'settings' ? 'active' : ''; ?>">
                     Site Settings
                 </a>
+                <a href="?tab=sync_history" class="admin-nav-item <?php echo $tab === 'sync_history' ? 'active' : ''; ?>">
+                    Sync History Logs
+                </a>
                 <a href="?tab=security" class="admin-nav-item <?php echo $tab === 'security' ? 'active' : ''; ?>">
                     Security
                 </a>
@@ -461,6 +514,27 @@ $total_machine_requests = $db->query("SELECT COUNT(*) FROM machine_requests")->f
 
         <!-- Main Content Area -->
         <main class="admin-content">
+            <?php
+            // Query the latest sync log
+            $latestSync = $db->query("SELECT status, sync_time, message FROM sync_logs ORDER BY id DESC LIMIT 1")->fetch();
+            if ($latestSync && $latestSync['status'] === 'Failed'):
+            ?>
+                <div style="background-color: #fee2e2; border-left: 5px solid #ef4444; color: #991b1b; padding: 1rem 1.5rem; margin-bottom: 2rem; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span style="font-size: 1.5rem;">⚠️</span>
+                        <div>
+                            <strong style="font-weight: 700;">1C Stock Sync Failed!</strong> 
+                            <span style="font-size: 0.9rem; display: block; margin-top: 0.15rem;">
+                                The last sync attempt on <code style="background: rgba(0,0,0,0.05); padding: 0.1rem 0.3rem; border-radius: 4px;"><?php echo htmlspecialchars($latestSync['sync_time']); ?></code> failed. Reason: <em><?php echo htmlspecialchars($latestSync['message']); ?></em>
+                            </span>
+                        </div>
+                    </div>
+                    <a href="?tab=sync_history" style="background: #ef4444; color: #ffffff; padding: 0.45rem 1rem; border-radius: 4px; text-decoration: none; font-size: 0.85rem; font-weight: 700; transition: opacity 0.15s;" onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">
+                        View Log
+                    </a>
+                </div>
+            <?php endif; ?>
+
             <div class="admin-header">
                 <h2><?php echo ucfirst($tab); ?> Panel</h2>
                 <p>Manage and monitor website configurations</p>
@@ -541,14 +615,116 @@ $total_machine_requests = $db->query("SELECT COUNT(*) FROM machine_requests")->f
                     
                     <div style="margin-top: 2rem; border-top: 1px solid var(--border-gray); padding-top: 1.5rem;">
                         <h4 style="font-weight: 700; font-size: 1.1rem; color: var(--primary-blue); margin-bottom: 0.5rem;">Inventory Synchronization Utility</h4>
-                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Sync your SQLite database directly with <code>items.json</code> (adds new machines, updates changed values, and deletes removed entries). Image WebP compression is handled automatically.</p>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Synchronize your SQLite database with your 1C inventory. You can pull live data from the 1C SOAP web service or use a manual <code>items.json</code> file.</p>
                         
-                        <form action="?tab=dashboard" method="POST">
-                            <input type="hidden" name="action" value="sync_catalog">
-                            <button type="submit" class="hz-filter-btn" style="padding: 0.65rem 1.5rem; background: var(--primary-blue); color: #ffffff; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; transition: background 0.2s;">
-                                Sync Catalog Now
+                        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+                            <!-- 1C SOAP Sync -->
+                            <button type="button" onclick="startChunkedSync('soap')" class="hz-filter-btn" style="padding: 0.65rem 1.5rem; background: #eab308; color: #000000; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; transition: background 0.2s;">
+                                ⚡ Pull & Sync from 1C SOAP (Chunked)
                             </button>
-                        </form>
+
+                            <!-- Local JSON Sync -->
+                            <button type="button" onclick="startChunkedSync('json')" class="hz-filter-btn" style="padding: 0.65rem 1.5rem; background: var(--primary-blue); color: #ffffff; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; transition: background 0.2s;">
+                                Sync from Local items.json (Chunked)
+                            </button>
+                        </div>
+
+                        <!-- Progress Bar UI -->
+                        <div id="syncProgressContainer" style="display: none; margin-top: 1.5rem; background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                            <h5 id="syncProgressTitle" style="margin: 0 0 0.5rem; font-weight: 700; font-size: 0.95rem; color: var(--text);">Synchronizing Inventory...</h5>
+                            <p id="syncStatusText" style="margin: 0 0 1rem; font-size: 0.85rem; color: var(--text-muted);">Preparing data...</p>
+                            
+                            <div style="background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden; position: relative;">
+                                <div id="syncProgressBar" style="width: 0%; height: 100%; background: var(--primary-blue); transition: width 0.3s ease;"></div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+                                <span id="syncProgressLabel" style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">0%</span>
+                                <span id="syncProgressCount" style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">0 / 0 items</span>
+                            </div>
+                        </div>
+
+                        <!-- JS Controller -->
+                        <script>
+                        async function startChunkedSync(source) {
+                            const progressContainer = document.getElementById('syncProgressContainer');
+                            const progressBar = document.getElementById('syncProgressBar');
+                            const statusText = document.getElementById('syncStatusText');
+                            const progressLabel = document.getElementById('syncProgressLabel');
+                            const progressCount = document.getElementById('syncProgressCount');
+                            
+                            progressContainer.style.display = 'block';
+                            progressBar.style.width = '0%';
+                            progressBar.style.background = 'var(--primary-blue)';
+                            statusText.style.color = 'var(--text-muted)';
+                            progressLabel.innerText = '0%';
+                            progressCount.innerText = 'Initializing...';
+                            
+                            try {
+                                // Step 1: Fetch SOAP data or validate local JSON and get item count
+                                statusText.innerText = source === 'soap' ? 'Connecting to 1C SOAP service and fetching catalog items...' : 'Validating local items.json file...';
+                                
+                                const fetchUrl = `index.php?action=ajax_sync&step=fetch&source=${source}`;
+                                const fetchResponse = await fetch(fetchUrl);
+                                const fetchData = await fetchResponse.json();
+                                
+                                if (!fetchData.success) {
+                                    alert('Error during initial fetch: ' + fetchData.message);
+                                    progressContainer.style.display = 'none';
+                                    return;
+                                }
+                                
+                                const totalItems = parseInt(fetchData.total_items) || 0;
+                                if (totalItems === 0) {
+                                    alert('No items found to synchronize.');
+                                    progressContainer.style.display = 'none';
+                                    return;
+                                }
+                                
+                                statusText.innerText = `Found ${totalItems} items. Starting database and WebP image synchronization...`;
+                                progressCount.innerText = `0 / ${totalItems} items`;
+                                
+                                // Step 2: Loop sync in chunks of 30
+                                const limit = 30;
+                                let offset = 0;
+                                
+                                while (offset < totalItems) {
+                                    statusText.innerText = `Processing items ${offset + 1} to ${Math.min(offset + limit, totalItems)} of ${totalItems}...`;
+                                    
+                                    const syncUrl = `index.php?action=ajax_sync&step=sync&offset=${offset}&limit=${limit}`;
+                                    const syncResponse = await fetch(syncUrl);
+                                    const syncData = await syncResponse.json();
+                                    
+                                    if (!syncData.success) {
+                                        alert('Error during synchronization: ' + syncData.message);
+                                        statusText.innerText = 'Synchronization failed. Check error logs.';
+                                        statusText.style.color = '#ef4444';
+                                        progressBar.style.background = '#ef4444';
+                                        return;
+                                    }
+                                    
+                                    offset += limit;
+                                    const pct = Math.min(Math.round((offset / totalItems) * 100), 100);
+                                    progressBar.style.width = `${pct}%`;
+                                    progressLabel.innerText = `${pct}%`;
+                                    progressCount.innerText = `${Math.min(offset, totalItems)} / ${totalItems} items`;
+                                }
+                                
+                                statusText.innerText = 'Database synchronization successfully completed!';
+                                statusText.style.color = '#10b981';
+                                progressBar.style.background = '#10b981';
+                                
+                                setTimeout(() => {
+                                    window.location.href = '?tab=dashboard&success=Sync+completed+successfully';
+                                }, 1500);
+                                
+                            } catch (err) {
+                                console.error(err);
+                                alert('An unexpected network error occurred: ' + err.message);
+                                progressContainer.style.display = 'none';
+                            }
+                        }
+                        </script>
                     </div>
                 </div>
             <?php endif; ?>
@@ -660,45 +836,104 @@ $total_machine_requests = $db->query("SELECT COUNT(*) FROM machine_requests")->f
                     </form>
                 </div>
 
-                <div class="card">
-                    <h3>Current Image Catalog</h3>
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Key</th>
-                                <th>Alt Text</th>
-                                <th>Current Reference / Image Preview</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $images = $db->query("SELECT * FROM site_images ORDER BY image_key")->fetchAll();
-                            if (empty($images)):
-                            ?>
-                                <tr>
-                                    <td colspan="4" style="text-align: center; color: var(--text-muted);">No image records created yet. Code elements will generate auto-placeholders.</td>
-                                </tr>
-                            <?php else: ?>
-                                <?php foreach ($images as $img): ?>
-                                    <tr>
-                                        <td><code><?php echo htmlspecialchars($img['image_key']); ?></code></td>
-                                        <td><?php echo htmlspecialchars($img['alt_text'] ?? ''); ?></td>
-                                        <td>
-                                            <a href="../<?php echo htmlspecialchars($img['image_path']); ?>" target="_blank" style="display: inline-flex; align-items: center; gap: 0.5rem;">
-                                                <img src="../<?php echo htmlspecialchars($img['image_path']); ?>" alt="preview" style="max-height: 40px; max-width: 100px; border-radius: 4px; border: 1px solid var(--border);">
-                                                <span style="font-size: 0.85rem; color: var(--primary);"><?php echo htmlspecialchars($img['image_path']); ?></span>
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-secondary btn-sm" onclick="editImage(<?php echo htmlspecialchars(json_encode($img)); ?>)">Edit</button>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
+                <?php
+                // Image grouping helper
+                function get_image_group($key) {
+                    if ($key === 'logo' || $key === 'footer_logo') {
+                        return 'Brand Logos & Identity';
+                    }
+                    if ($key === 'hero_bg' || $key === 'hyster_badge' || $key === 'catalog_cover' || $key === 'catalog_small_icon') {
+                        return 'Homepage - General Sections';
+                    }
+                    if (strpos($key, 'sol_') === 0) {
+                        return 'Homepage - Industry Solutions';
+                    }
+                    if ($key === 'training_bg' || $key === 'careers_img') {
+                        return 'Homepage - Training & Careers';
+                    }
+                    if (strpos($key, 'collab_') === 0 || strpos($key, 'web_') === 0) {
+                        return 'Homepage - Collaborators & Affiliated Websites';
+                    }
+                    if (strpos($key, 'app_') === 0 || strpos($key, 'google_') === 0) {
+                        return 'Homepage - Mobile B2B App Badges';
+                    }
+                    if (strpos($key, 'insta_') === 0) {
+                        return 'Homepage - Instagram Feed Mockups';
+                    }
+                    if ($key === 'parts_collage') {
+                        return 'Spare Parts Page';
+                    }
+                    if (strpos($key, 'about_') === 0) {
+                        return 'About Us Page';
+                    }
+                    if ($key === 'rentals_banner_bg') {
+                        return 'Forklift Rentals Page';
+                    }
+                    if ($key === 'sell_machine_banner') {
+                        return 'Sell Your Machine Page';
+                    }
+                    if (strpos($key, 'repairs_') === 0) {
+                        return 'Repairs & Services Page';
+                    }
+                    return 'Miscellaneous / General';
+                }
+
+                $images = $db->query("SELECT * FROM site_images ORDER BY image_key")->fetchAll();
+                
+                // Group images
+                $groups = [];
+                foreach ($images as $img) {
+                    $grpName = get_image_group($img['image_key']);
+                    $groups[$grpName][] = $img;
+                }
+                
+                // Sort groups for consistent display order
+                ksort($groups);
+                ?>
+
+                <h3 style="margin-top: 2rem; margin-bottom: 1.5rem; font-weight: 700; color: var(--primary-blue);">Grouped Page Image Catalog</h3>
+
+                <?php foreach ($groups as $groupTitle => $groupImages): ?>
+                    <div class="card" style="margin-bottom: 2rem; border-top: 4px solid var(--primary-blue);">
+                        <h4 style="font-weight: 700; font-size: 1.1rem; color: var(--primary-blue); margin-bottom: 1.25rem;">
+                            <?php echo $groupTitle; ?> (<?php echo count($groupImages); ?>)
+                        </h4>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+                            <?php foreach ($groupImages as $img): ?>
+                                <div style="background: #ffffff; border: 1px solid var(--border-gray); border-radius: 6px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: transform 0.2s, box-shadow 0.2s;" class="image-card">
+                                    <div>
+                                        <!-- Preview Thumbnail -->
+                                        <div style="height: 140px; background: #f8fafc; border-radius: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 0.85rem; border: 1px dashed var(--border-gray);">
+                                            <img src="../<?php echo htmlspecialchars($img['image_path']); ?>" alt="preview" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                        </div>
+                                        
+                                        <!-- Details -->
+                                        <div style="margin-bottom: 0.85rem;">
+                                            <strong style="display: block; font-size: 0.95rem; color: var(--text-dark); margin-bottom: 0.15rem;">
+                                                <?php echo htmlspecialchars(ucwords(str_replace('_', ' ', $img['image_key']))); ?>
+                                            </strong>
+                                            <code style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;"><?php echo htmlspecialchars($img['image_key']); ?></code>
+                                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.35; height: 36px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                                <strong>Alt text:</strong> <?php echo htmlspecialchars($img['alt_text'] ?: 'No alternate text'); ?>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Actions -->
+                                    <div style="border-top: 1px solid var(--border-gray); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 140px;" title="<?php echo htmlspecialchars($img['image_path']); ?>">
+                                            <?php echo htmlspecialchars(basename($img['image_path'])); ?>
+                                        </span>
+                                        <button class="btn btn-secondary btn-sm" style="padding: 0.35rem 0.85rem; font-weight: 600;" onclick="editImage(<?php echo htmlspecialchars(json_encode($img)); ?>)">
+                                            Replace
+                                        </button>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
 
                 <script>
                     function editImage(data) {
@@ -761,6 +996,133 @@ $total_machine_requests = $db->query("SELECT COUNT(*) FROM machine_requests")->f
                         <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Update Password</button>
                     </form>
                 </div>
+            <?php endif; ?>
+
+            <!-- Sync History Tab -->
+            <?php if ($tab === 'sync_history'): ?>
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3>1C Sync History Logs</h3>
+                        <form action="?tab=sync_history" method="POST" style="margin: 0;">
+                            <input type="hidden" name="action" value="sync_catalog">
+                            <input type="hidden" name="sync_source" value="soap">
+                            <button type="submit" class="hz-filter-btn" style="padding: 0.5rem 1.25rem; background: #eab308; color: #000000; font-weight: 700; border: none; border-radius: 4px; cursor: pointer;">
+                                ⚡ Trigger SOAP Sync Now
+                            </button>
+                        </form>
+                    </div>
+
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Sync Time</th>
+                                <th>Source</th>
+                                <th>Status</th>
+                                <th>Result Message</th>
+                                <th>Changes Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $logs = $db->query("SELECT * FROM sync_logs ORDER BY id DESC LIMIT 30")->fetchAll();
+                            if (empty($logs)):
+                            ?>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No sync execution logs recorded yet. Run a synchronization to generate logs.</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($logs as $log): 
+                                    $added = json_decode($log['added_items'] ?? '[]', true) ?: [];
+                                    $removed = json_decode($log['removed_items'] ?? '[]', true) ?: [];
+                                    $updated = json_decode($log['updated_items'] ?? '[]', true) ?: [];
+                                    $hasChanges = !empty($added) || !empty($removed) || !empty($updated);
+                                ?>
+                                    <tr>
+                                        <td><strong><?php echo htmlspecialchars($log['sync_time']); ?></strong></td>
+                                        <td><span class="badge" style="background: #efefef; color: #333; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem;"><?php echo htmlspecialchars($log['source']); ?></span></td>
+                                        <td>
+                                            <?php if ($log['status'] === 'Success'): ?>
+                                                <span style="background: #dcfce7; color: #166534; padding: 0.25rem 0.65rem; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">Success</span>
+                                            <?php else: ?>
+                                                <span style="background: #fee2e2; color: #991b1b; padding: 0.25rem 0.65rem; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">Failed</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><span style="font-size: 0.9rem;"><?php echo htmlspecialchars($log['message']); ?></span></td>
+                                        <td>
+                                            <?php if ($hasChanges): ?>
+                                                <button class="btn btn-secondary btn-sm" onclick="toggleDetails(<?php echo $log['id']; ?>)">
+                                                    Show Changes (<?php echo count($added) + count($removed) + count($updated); ?>)
+                                                </button>
+                                            <?php else: ?>
+                                                <span style="color: var(--text-muted); font-size: 0.85rem;">No changes</span>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                    <?php if ($hasChanges): ?>
+                                        <tr id="details-<?php echo $log['id']; ?>" style="display: none; background: #fafafa;">
+                                            <td colspan="5" style="padding: 1.5rem; border-top: none;">
+                                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                                                    <!-- Added Items -->
+                                                    <?php if (!empty($added)): ?>
+                                                        <div style="border: 1px solid #dcfce7; border-radius: 6px; padding: 1rem; background: #ffffff;">
+                                                            <h5 style="color: #166534; font-weight: 700; margin-bottom: 0.5rem; border-bottom: 1px solid #dcfce7; padding-bottom: 0.25rem;">Added to Web (<?php echo count($added); ?>)</h5>
+                                                            <ul style="list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto;">
+                                                                <?php foreach ($added as $item): ?>
+                                                                    <li style="font-size: 0.85rem; padding: 0.25rem 0; border-bottom: 1px dashed #efefef;">
+                                                                        <code><?php echo htmlspecialchars($item['code']); ?></code> - <?php echo htmlspecialchars($item['name']); ?>
+                                                                    </li>
+                                                                <?php endforeach; ?>
+                                                            </ul>
+                                                        </div>
+                                                    <?php endif; ?>
+
+                                                    <!-- Removed Items -->
+                                                    <?php if (!empty($removed)): ?>
+                                                        <div style="border: 1px solid #fee2e2; border-radius: 6px; padding: 1rem; background: #ffffff;">
+                                                            <h5 style="color: #991b1b; font-weight: 700; margin-bottom: 0.5rem; border-bottom: 1px solid #fee2e2; padding-bottom: 0.25rem;">Removed from Web (<?php echo count($removed); ?>)</h5>
+                                                            <ul style="list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto;">
+                                                                <?php foreach ($removed as $item): ?>
+                                                                    <li style="font-size: 0.85rem; padding: 0.25rem 0; border-bottom: 1px dashed #efefef;">
+                                                                        <code><?php echo htmlspecialchars($item['code']); ?></code> - <?php echo htmlspecialchars($item['name']); ?>
+                                                                    </li>
+                                                                <?php endforeach; ?>
+                                                            </ul>
+                                                        </div>
+                                                    <?php endif; ?>
+
+                                                    <!-- Updated Items -->
+                                                    <?php if (!empty($updated)): ?>
+                                                        <div style="border: 1px solid #fef9c3; border-radius: 6px; padding: 1rem; background: #ffffff;">
+                                                            <h5 style="color: #854d0e; font-weight: 700; margin-bottom: 0.5rem; border-bottom: 1px solid #fef9c3; padding-bottom: 0.25rem;">Updated Details (<?php echo count($updated); ?>)</h5>
+                                                            <ul style="list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto;">
+                                                                <?php foreach ($updated as $item): ?>
+                                                                    <li style="font-size: 0.85rem; padding: 0.25rem 0; border-bottom: 1px dashed #efefef;">
+                                                                        <code><?php echo htmlspecialchars($item['code']); ?></code> - <?php echo htmlspecialchars($item['name']); ?>
+                                                                    </li>
+                                                                <?php endforeach; ?>
+                                                            </ul>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <script>
+                    function toggleDetails(id) {
+                        var el = document.getElementById('details-' + id);
+                        if (el.style.display === 'none') {
+                            el.style.display = 'table-row';
+                        } else {
+                            el.style.display = 'none';
+                        }
+                    }
+                </script>
             <?php endif; ?>
 
             <!-- FAQs Tab -->

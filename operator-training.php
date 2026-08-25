@@ -38,7 +38,7 @@ $categories = [
         'image_alt' => 'Hyster Forklift Truck',
         'tables' => [
             [
-                'columns' => ['Forklifts', 'Operator', 'Energy', 'Course Type'],
+                'columns' => ['Forklifts', 'Operator', 'Power', 'Course Type'],
                 'rows' => [
                     ['B1', 'Rider', 'Electric/Diesel/LPG/ Gasoline', 'Safe use of Counterbalance Forklift up to 5 Tonnes.'],
                     ['B2', 'Rider', 'Electric/Diesel/LPG/ Gasoline', 'Safe use of Counterbalance Forklift up to 15 Tonnes.'],
@@ -55,7 +55,7 @@ $categories = [
         'image_alt' => 'Hyster Reach Truck',
         'tables' => [
             [
-                'columns' => ['Reach Trucks', 'Operator', 'Energy', 'Course Type'],
+                'columns' => ['Reach Trucks', 'Operator', 'Power', 'Course Type'],
                 'rows' => [
                     ['D1', 'Rider', 'Electric', 'Safe use of Counterbalance Reach Truck.']
                 ]
@@ -70,7 +70,7 @@ $categories = [
         'image_alt' => 'Pallet Stacker',
         'tables' => [
             [
-                'columns' => ['Pallet Stackers', 'Operator', 'Energy', 'Course Type'],
+                'columns' => ['Pallet Stackers', 'Operator', 'Power', 'Course Type'],
                 'rows' => [
                     ['A5', 'Pedestrian', 'Electric', 'Safe Use of Pallet Stacker by Pedestrian.'],
                     ['D2', 'Rider', 'Semi-Manual', 'Safe Use of Ride-On Semi-Manual Pallet Stacker by Pedestrian.'],
@@ -88,13 +88,13 @@ $categories = [
         'image_alt' => 'Pallet Truck',
         'tables' => [
             [
-                'columns' => ['Manual Handlifts', 'Operator', 'Energy', 'Course Type'],
+                'columns' => ['Manual Handlifts', 'Operator', 'Power', 'Course Type'],
                 'rows' => [
                     ['Z1', 'Pedestrian', 'Manual & Semi-Manual', 'Safe Use of Semi-Manual Pallet Truck by Pedestrian.']
                 ]
             ],
             [
-                'columns' => ['Powered Pallet Trucks', 'Operator', 'Energy', 'Course Type'],
+                'columns' => ['Powered Pallet Trucks', 'Operator', 'Power', 'Course Type'],
                 'rows' => [
                     ['A1', 'Pedestrian', 'Electric', 'Safe Use of Pallet Truck by Pedestrian.'],
                     ['A2', 'Rider', 'Electric', 'Safe Use of Ride-on Pallet Truck by Pedestrian.']
@@ -110,7 +110,7 @@ $categories = [
         'image_alt' => 'Order Picker',
         'tables' => [
             [
-                'columns' => ['Order Pickers', 'Operator', 'Energy', 'Course Type'],
+                'columns' => ['Order Pickers', 'Operator', 'Power', 'Course Type'],
                 'rows' => [
                     ['E1', 'Pedestrian', 'Electric', 'Safe use of Order Picker by Pedestrian up to 2.5 Metres.'],
                     ['E2', 'Pedestrian', 'Electric', 'Safe use of Order Picker by Pedestrian from 2.5 Metres and above.']
@@ -126,7 +126,7 @@ $categories = [
         'image_alt' => 'VNA Truck',
         'tables' => [
             [
-                'columns' => ['Very Narrow Aisles', 'Operator', 'Energy', 'Course Type'],
+                'columns' => ['Very Narrow Aisles', 'Operator', 'Power', 'Course Type'],
                 'rows' => [
                     ['F1', 'Rider Up', 'Electric', 'Safe use of Rider-Up Very Narrow Aisle by Pedestrian.'],
                     ['F2', 'Rider Down', 'Electric', 'Safe use of Rider-Down Very Narrow Aisle by Pedestrian.']
@@ -142,7 +142,7 @@ $categories = [
         'image_alt' => 'Mobile Elevating Working Platform',
         'tables' => [
             [
-                'columns' => ['Elevating Platforms', 'Operator', 'Energy', 'Course Type'],
+                'columns' => ['Elevating Platforms', 'Operator', 'Power', 'Course Type'],
                 'rows' => [
                     ['1A', 'Pedestrian', 'Electric', 'Safe use of MEWP Vertical Elevating Platform (Static)'],
                     ['1B', 'Pedestrian', 'Electric', 'Safe use of MEWP Boom Elevating Platform (Static)'],
